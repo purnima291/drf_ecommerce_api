@@ -1,8 +1,27 @@
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Product
-from .serializers import ProductSerializer
+from .models import Product, Category
+from .serializers import ProductSerializer, CategorySerializer
+
+
+class CategoryListCreateView(generics.ListCreateAPIView):
+    """
+    GET: List all categories
+    POST: Create a new category
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    GET: Retrieve a single category by slug
+    PUT: Update a category
+    DELETE: Delete a category
+    """
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
 
 class ProductListCreateView(generics.ListCreateAPIView):
     """
