@@ -40,9 +40,11 @@ INSTALLED_APPS = [
 
     # Third party apps
     'rest_framework',
+    'rest_framework.authtoken',
 
     # Local apps
     'products',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -104,6 +106,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
