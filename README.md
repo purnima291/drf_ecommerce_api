@@ -1,4 +1,4 @@
-# E-commerce API - Phase 2
+# E-commerce API - Phase 3
 
 A simple Django REST Framework API for managing products in an e-commerce system.
 
@@ -9,6 +9,7 @@ A simple Django REST Framework API for managing products in an e-commerce system
 - **Database Relationship**: Each product now have category field by referring to Category Model as Foreign key
 - **Slug field**: SEO-friendly urls using slugs for both products and categories
 - **Admin Panel**:  Enabled Django admin panel to manage data via web interface.
+- **User Authentication**: Token based authentication used to secure APIs.
 
 ## API Endpoints
 ### Products
@@ -23,6 +24,14 @@ A simple Django REST Framework API for managing products in an e-commerce system
 - `GET /api/products/categories/<slug:slug>` - Retrieve a category using it's slug name
 - `PUT /api/products/categories/<slug:slug>` - Update a category, lookup based on slug field
 - `DELETE /api/products/categories/<slug:slug>` - Delete a category, lookup based on slug field
+### Accounts
+- `POST /api/accounts/register/` - Register a new user and generate a token
+- `POST /api/accounts/login/` - Login existing user and get a token
+-`GET /api/accounts/profile/` - Authenticated user can get their profile details
+-`PUT /api/accounts/profile/` - Authenticated user can update their profile details
+- `POST /api/accounts/change-password/` - Authenticated user can change password and get a new token
+- `POST /api/accounts/logout/` - Authenticated user logout and clear out their token.
+
 
 ## Tech Stack
 - Django 5.x
