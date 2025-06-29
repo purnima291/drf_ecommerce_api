@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from .serializers import UserRegistrationSerializer, UserLoginSerializer
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, ChangePasswordSerializer
 
 
 @api_view(['POST'])
@@ -58,3 +58,50 @@ def login(request):
         }, status=status.HTTP_200_OK)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT'])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    """
+    Get or update user profile
+    """
+    user = request.user
+
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(user)
+        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+    elif request.method == 'PUT':
+        serializer = UserProfileSerializer(user, data=request.data, context={'request': request})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'Profile updated successfully',
+                'user': serializer.data
+            }, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    """
+    Change user password
+    """
+    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+
+    if serializer.is_valid():
+        serializer.save()
+
+        # Generate a new Token for security (invalidate old session)
+        Token.objects.filter(user=request.user).delete()
+        new_token = Token.objects.create(user=request.user)
+
+        return Response({
+            'message': 'Password changed successfully',
+            'token': new_token.key
+        }, status=status.HTTP_200_OK)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

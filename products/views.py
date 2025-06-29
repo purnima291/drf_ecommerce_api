@@ -1,6 +1,6 @@
 from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.authentication import TokenAuthentication
 from .models import Product, Category
 from .serializers import ProductSerializer, CategorySerializer
 
@@ -12,6 +12,8 @@ class CategoryListCreateView(generics.ListCreateAPIView):
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -22,6 +24,8 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'slug'
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class ProductListCreateView(generics.ListCreateAPIView):
     """
@@ -30,6 +34,8 @@ class ProductListCreateView(generics.ListCreateAPIView):
     """
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
@@ -40,6 +46,8 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'slug' # use slugs instead of pk for lookups
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 
