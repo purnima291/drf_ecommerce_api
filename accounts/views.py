@@ -3,7 +3,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, ChangePasswordSerializer
+from .serializers import (
+    UserRegistrationSerializer,
+    UserLoginSerializer,
+    UserProfileSerializer,
+    ChangePasswordSerializer
+)
 
 
 @api_view(['POST'])
@@ -30,7 +35,7 @@ def register(request):
             },
             'token': token.key
         }, status=status.HTTP_201_CREATED)
-    
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -56,8 +61,9 @@ def login(request):
             },
             'token': token.key
         }, status=status.HTTP_200_OK)
-    
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
@@ -71,7 +77,8 @@ def profile(request):
         serializer = UserProfileSerializer(user)
         return Response({'user': serializer.data}, status=status.HTTP_200_OK)
     elif request.method == 'PUT':
-        serializer = UserProfileSerializer(user, data=request.data, context={'request': request})
+        serializer = UserProfileSerializer(
+            user, data=request.data, context={'request': request})
 
         if serializer.is_valid():
             serializer.save()
@@ -79,9 +86,9 @@ def profile(request):
                 'message': 'Profile updated successfully',
                 'user': serializer.data
             }, status=status.HTTP_200_OK)
-        
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -89,7 +96,8 @@ def change_password(request):
     """
     Change user password
     """
-    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+    serializer = ChangePasswordSerializer(
+        data=request.data, context={'request': request})
 
     if serializer.is_valid():
         serializer.save()
@@ -102,6 +110,20 @@ def change_password(request):
             'message': 'Password changed successfully',
             'token': new_token.key
         }, status=status.HTTP_200_OK)
-    
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    """
+    Logout users by deleting thier authentication token
+    """
+
+    # Delete the user's token to logout
+    Token.objects.filter(user=request.user).delete()
+
+    return Response({
+        'message': 'Successfully logged out'
+    }, status=status.HTTP_200_OK)
