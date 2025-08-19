@@ -56,6 +56,8 @@ class CartItem(models.Model):
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
+        null=True,
+        blank=True,
         help_text='Price when item was added to cart (locked price)'
     )
     added_at = models.DateTimeField(auto_now_add=True)
@@ -69,6 +71,8 @@ class CartItem(models.Model):
     @property
     def total_price(self):
         """Total price for this cart item (quantity * locked price)"""
+        if self.price is None:
+            return 0
         return self.quantity * self.price
 
     def save(self, *args, **kwargs):
